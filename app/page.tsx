@@ -1,103 +1,297 @@
-import Image from "next/image";
+"use client";
+
+import { FileText, RotateCw, Sparkles, Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { ChangeEvent, useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [prompt, setPrompt] = useState("");
+  const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<string>();
+  const [uploadedImage, setUploadedImage] = useState<File | undefined>();
+  const [ingredients, setIngredients] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const fileChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setUploadedImage(e.target.files[0]);
+      const filePreview = URL.createObjectURL(e.target.files[0]);
+      setPreview(filePreview);
+      console.log(preview);
+    }
+  };
+
+  const extractIngredients = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setIngredients("");
+
+    try {
+      const response = await fetch("/api/text-to-text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await response.json();
+
+      if (data.text) {
+        setIngredients(data.text);
+      } else {
+        alert("Failed to extract ingredients");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to extract ingredients");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateImage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setImage("");
+
+    try {
+      const response = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await response.json();
+
+      if (data.image) {
+        setImage(data.image);
+      } else {
+        alert("Failed to generate image");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to generate image");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="h-screen w-screen flex justify-center items-center">
+      <Card>
+        <div className="flex flex-col gap-6 p-5">
+          <Tabs defaultValue="imageAnalysis" className="flex flex-col gap-6">
+            <TabsList>
+              <TabsTrigger value="imageAnalysis">Image analysis</TabsTrigger>
+              <TabsTrigger value="ingredientRecognition">
+                Ingredient recognition
+              </TabsTrigger>
+              <TabsTrigger value="imageCreator">Image creator</TabsTrigger>
+            </TabsList>
+            <TabsContent value="imageAnalysis" className="flex flex-col gap-6">
+              <CardContent className="grid gap-6 px-0">
+                <div className="grid gap-2">
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-2 items-center">
+                      <Sparkles />
+                      <Label
+                        htmlFor="tabs-demo-name"
+                        className="text-xl leading-7 font-semibold"
+                      >
+                        Image analysis
+                      </Label>
+                    </div>
+                    <Button variant={"outline"}>
+                      <RotateCw className="text-foreground" />
+                    </Button>
+                  </div>
+                  <p className="text-sm leading-5 font-normal text-muted-foreground">
+                    Upload a food photo, and AI will detect the ingredients.
+                  </p>
+                  {uploadedImage ? (
+                    preview && (
+                      <img
+                        src={preview}
+                        alt=""
+                        className=" inset-0 h-35 w-50 object-cover rounded-[6px]"
+                      />
+                    )
+                  ) : (
+                    <Input
+                      id="tabs-demo-name"
+                      type="file"
+                      onChange={fileChangeHandler}
+                    />
+                  )}
+                </div>
+                <CardFooter className="flex justify-end px-0">
+                  <Button>Generate</Button>
+                </CardFooter>
+              </CardContent>
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2 items-center">
+                  <FileText />
+                  <Label
+                    htmlFor="tabs-demo-name"
+                    className="text-xl leading-7 font-semibold"
+                  >
+                    Identified Ingredients
+                  </Label>
+                </div>
+                <p className="text-sm leading-5 font-normal text-muted-foreground">
+                  First, enter your text to recognize an ingredients.
+                </p>
+              </div>
+            </TabsContent>
+
+            {/* 2dh  */}
+            <form onSubmit={extractIngredients}>
+              <TabsContent
+                value="ingredientRecognition"
+                className="flex flex-col gap-6"
+              >
+                <CardContent className="grid gap-6 px-0">
+                  <div className="grid gap-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-2 items-center">
+                        <Sparkles />
+                        <Label
+                          htmlFor="tabs-demo-name"
+                          className="text-xl leading-7 font-semibold"
+                        >
+                          Ingredient recognition
+                        </Label>
+                      </div>
+                      <Button variant={"outline"}>
+                        <RotateCw className="text-foreground" />
+                      </Button>
+                    </div>
+                    <p className="text-sm leading-5 font-normal text-muted-foreground">
+                      Describe the food, and AI will detect the ingredients.
+                    </p>
+
+                    <textarea
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      id="tabs-demo-name"
+                      placeholder="Орц тодорхойлох"
+                    />
+                  </div>
+                  <CardFooter className="flex justify-end px-0">
+                    <Button disabled={loading || !prompt}>
+                      {" "}
+                      {loading ? "Extracting..." : "Extract Ingredients"}
+                    </Button>
+                  </CardFooter>
+                </CardContent>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2 items-center">
+                    <FileText />
+                    <Label
+                      htmlFor="tabs-demo-name"
+                      className="text-xl leading-7 font-semibold"
+                    >
+                      Here is the summary
+                    </Label>
+                  </div>
+                  {ingredients ? (
+                    <div className="mt-8 w-full max-w-2xl">
+                      <h2 className="text-2xl font-semibold mb-4">
+                        Extracted Ingredients:
+                      </h2>
+                      <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
+                        <p className="text-lg whitespace-pre-wrap">
+                          {ingredients}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm leading-5 font-normal text-muted-foreground">
+                      First, enter your image to recognize an ingredients.
+                    </p>
+                  )}
+                </div>
+              </TabsContent>
+            </form>
+
+            {/* 3dh */}
+            <form onSubmit={generateImage}>
+              <TabsContent value="imageCreator" className="flex flex-col gap-6">
+                <CardContent className="grid gap-6 px-0">
+                  <div className="grid gap-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-2 items-center">
+                        <Sparkles />
+                        <Label
+                          htmlFor="tabs-demo-name"
+                          className="text-xl leading-7 font-semibold"
+                        >
+                          Food image creator
+                        </Label>
+                      </div>
+                      <Button variant={"outline"}>
+                        <RotateCw className="text-foreground" />
+                      </Button>
+                    </div>
+                    <p className="text-sm leading-5 font-normal text-muted-foreground">
+                      What food image do you want? Describe it briefly.
+                    </p>
+
+                    <Input
+                      id="tabs-demo-name"
+                      placeholder="Хоолны тайлбар"
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                    />
+                  </div>
+                  <CardFooter className="flex justify-end px-0">
+                    <Button disabled={loading || !prompt}>
+                      {loading ? "Generating..." : "Generate"}
+                    </Button>
+                  </CardFooter>
+                </CardContent>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2 items-center">
+                    <FileText />
+                    <Label
+                      htmlFor="tabs-demo-name"
+                      className="text-xl leading-7 font-semibold"
+                    >
+                      Result
+                    </Label>
+                  </div>
+                  {image ? (
+                    <div className="mt-8 w-full max-w-2xl ">
+                      <img
+                        src={image}
+                        alt="Generated"
+                        className="w-full rounded-lg shadow-lg"
+                      />
+                      {/* <Button
+                        className="absolute right-2 bottom-1 z-10"
+                        variant={"outline"}
+                      >
+                        <Trash />
+                      </Button> */}
+                    </div>
+                  ) : (
+                    <p className="text-sm leading-5 font-normal text-muted-foreground">
+                      First, enter your text to generate an image.
+                    </p>
+                  )}
+                </div>
+              </TabsContent>
+            </form>
+          </Tabs>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </Card>
     </div>
   );
 }
