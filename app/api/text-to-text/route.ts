@@ -5,22 +5,22 @@ const hf = new InferenceClient(process.env.HF_TOKEN || "");
 
 export const POST = async (req: NextRequest) => {
   try {
-    const { prompt } = await req.json();
+    const { descPrompt } = await req.json();
 
-    if (!prompt) {
+    if (!descPrompt) {
       return NextResponse.json(
-        { error: "Prompt uis required" },
+        { error: "Prompt is required" },
         { status: 400 }
       );
     }
 
     const response = await hf.chatCompletion({
-      model: "black-forest-labs/FLUX.1-schnell",
+      model: "meta-llama/Llama-3.2-3B-Instruct",
       messages: [
         {
           role: "user",
           content: `Extract only the ingredients from this food description and return them as a simple comma-separated list without any explanation.
-Food description: ${prompt}
+Food description: ${descPrompt}
 Ingredients:`,
         },
       ],

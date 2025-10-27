@@ -10,11 +10,15 @@ import React, { ChangeEvent, useState } from "react";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
+  const [descPrompt, setDescPrompt] = useState("");
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [preview, setPreview] = useState<string>();
-  const [uploadedImage, setUploadedImage] = useState<File | undefined>();
+  const [preview, setPreview] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [ingredients, setIngredients] = useState("");
+  const [description, setDescription] = useState("");
+
+  //image to text
 
   const fileChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -24,6 +28,42 @@ export default function Home() {
       console.log(preview);
     }
   };
+
+  const defineImage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadedImage) return;
+    setLoading(true);
+    setDescription("");
+
+    const formData = new FormData();
+    formData.append("file", uploadedImage);
+
+    try {
+      const response = await fetch("/api/image-to-text", {
+        method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
+        // body: JSON.stringify({ uploadedImage }),
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDescription(data.caprion || "No caption generated.");
+      } else {
+        setDescription("Error: " + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      setDescription("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //extracting ingredients
 
   const extractIngredients = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +76,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ descPrompt }),
       });
 
       const data = await response.json();
@@ -53,6 +93,8 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  //text to image
 
   const generateImage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,61 +137,87 @@ export default function Home() {
               </TabsTrigger>
               <TabsTrigger value="imageCreator">Image creator</TabsTrigger>
             </TabsList>
-            <TabsContent value="imageAnalysis" className="flex flex-col gap-6">
-              <CardContent className="grid gap-6 px-0">
-                <div className="grid gap-2">
-                  <div className="flex justify-between items-center">
-                    <div className="flex gap-2 items-center">
-                      <Sparkles />
-                      <Label
-                        htmlFor="tabs-demo-name"
-                        className="text-xl leading-7 font-semibold"
+            <form onSubmit={defineImage}>
+              <TabsContent
+                value="imageAnalysis"
+                className="flex flex-col gap-6"
+              >
+                <CardContent className="grid gap-6 px-0">
+                  <div className="grid gap-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-2 items-center">
+                        <Sparkles />
+                        <Label
+                          htmlFor="tabs-demo-name"
+                          className="text-xl leading-7 font-semibold"
+                        >
+                          Image analysis
+                        </Label>
+                      </div>
+                      <Button
+                        variant={"outline"}
+                        onClick={() => {
+                          setUploadedImage(null);
+                          setPreview(null);
+                          setDescription("");
+                        }}
                       >
-                        Image analysis
-                      </Label>
+                        <RotateCw className="text-foreground" />
+                      </Button>
                     </div>
-                    <Button variant={"outline"}>
-                      <RotateCw className="text-foreground" />
-                    </Button>
-                  </div>
-                  <p className="text-sm leading-5 font-normal text-muted-foreground">
-                    Upload a food photo, and AI will detect the ingredients.
-                  </p>
-                  {uploadedImage ? (
-                    preview && (
+                    <p className="text-sm leading-5 font-normal text-muted-foreground">
+                      Upload a food photo, and AI will detect the ingredients.
+                    </p>
+                    {uploadedImage && preview ? (
                       <img
                         src={preview}
                         alt=""
                         className=" inset-0 h-35 w-50 object-cover rounded-[6px]"
                       />
-                    )
+                    ) : (
+                      <Input
+                        id="tabs-demo-name"
+                        type="file"
+                        // onChange={fileChangeHandler}
+                        onChange={fileChangeHandler}
+                      />
+                    )}
+                  </div>
+                  <CardFooter className="flex justify-end px-0">
+                    <Button disabled={loading || !uploadedImage}>
+                      {loading ? "Defining..." : "Define Image"}
+                    </Button>
+                  </CardFooter>
+                </CardContent>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2 items-center">
+                    <FileText />
+                    <Label
+                      htmlFor="tabs-demo-name"
+                      className="text-xl leading-7 font-semibold"
+                    >
+                      Here is the summary
+                    </Label>
+                  </div>
+                  {description ? (
+                    <div className="mt-8 w-full max-w-2xl">
+                      {/* <h2 className="text-2xl font-semibold mb-4">
+                        Extracted Ingredients:
+                      </h2> */}
+                      <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
+                        <p className="text-lg whitespace-pre-wrap">
+                          {description}
+                        </p>
+                      </div>
+                    </div>
                   ) : (
-                    <Input
-                      id="tabs-demo-name"
-                      type="file"
-                      onChange={fileChangeHandler}
-                    />
+                    <p className="text-sm leading-5 font-normal text-muted-foreground">
+                      First, enter your text to recognize an ingredients.
+                    </p>
                   )}
                 </div>
-                <CardFooter className="flex justify-end px-0">
-                  <Button>Generate</Button>
-                </CardFooter>
-              </CardContent>
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-2 items-center">
-                  <FileText />
-                  <Label
-                    htmlFor="tabs-demo-name"
-                    className="text-xl leading-7 font-semibold"
-                  >
-                    Identified Ingredients
-                  </Label>
-                </div>
-                <p className="text-sm leading-5 font-normal text-muted-foreground">
-                  First, enter your text to recognize an ingredients.
-                </p>
-              </div>
-            </TabsContent>
+              </TabsContent>
+            </form>
 
             {/* 2dh  */}
             <form onSubmit={extractIngredients}>
@@ -169,7 +237,13 @@ export default function Home() {
                           Ingredient recognition
                         </Label>
                       </div>
-                      <Button variant={"outline"}>
+                      <Button
+                        variant={"outline"}
+                        // onClick={() => {
+                        //   setPrompt("");
+                        //   setIngredients("");
+                        // }}
+                      >
                         <RotateCw className="text-foreground" />
                       </Button>
                     </div>
@@ -178,14 +252,14 @@ export default function Home() {
                     </p>
 
                     <textarea
-                      value={prompt}
-                      onChange={(e) => setPrompt(e.target.value)}
+                      value={descPrompt}
+                      onChange={(e) => setDescPrompt(e.target.value)}
                       id="tabs-demo-name"
                       placeholder="Орц тодорхойлох"
                     />
                   </div>
                   <CardFooter className="flex justify-end px-0">
-                    <Button disabled={loading || !prompt}>
+                    <Button disabled={loading || !descPrompt}>
                       {" "}
                       {loading ? "Extracting..." : "Extract Ingredients"}
                     </Button>
