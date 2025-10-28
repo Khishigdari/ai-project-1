@@ -64,7 +64,6 @@ export const ChatBot = () => {
 
   return (
     <div className="flex justify-end mr-9 mb-9">
-      {/* <form onSubmit={chatBotAssistant}> */}
       <DropdownMenu open={open}>
         <DropdownMenuTrigger asChild>
           <Button
@@ -120,7 +119,6 @@ export const ChatBot = () => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      {/* </form> */}
     </div>
   );
 };
