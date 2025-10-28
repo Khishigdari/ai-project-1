@@ -56,11 +56,11 @@ export const TextToImage = () => {
                   </Label>
                 </div>
                 <Button
-                // variant={"outline"}
-                // onClick={() => {
-                //   setPrompt("");
-                //   setImage(null);
-                // }}
+                  variant={"outline"}
+                  // onClick={() => {
+                  //   setPrompt("");
+                  //   setImage(null);
+                  // }}
                 >
                   <RotateCw className="text-foreground" />
                 </Button>
