@@ -9,7 +9,7 @@ export const POST = async (req: NextRequest) => {
 
     if (!prompt) {
       return NextResponse.json(
-        { error: "Prompt uis required" },
+        { error: "Prompt is required" },
         { status: 400 }
       );
     }
