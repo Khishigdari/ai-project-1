@@ -13,8 +13,8 @@ import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 export const ChatBot = () => {
   const [chat, setChat] = useState<string>("");
   const [chatResponse, setChatResponse] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   const chatBotAssistant = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -67,11 +67,11 @@ export const ChatBot = () => {
           <DropdownMenuSeparator />
           <div className="py-4 px-6 flex flex-col gap-2">
             {/* space-y-2 */}
-            {chat && (
+            {/* {chat && (
               <div className="bg-secondary rounded-xl py-2 px-4 text-sm text-black">
                 {chat}
               </div>
-            )}
+            )} */}
             {chatResponse && (
               <div className="bg-primary text-white rounded-xl py-2 px-4 text-sm">
                 {chatResponse}
