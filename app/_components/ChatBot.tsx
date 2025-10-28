@@ -1,14 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+
 import { MessageCircle, Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -25,6 +18,7 @@ export const ChatBot = () => {
   const [chatResponse, setChatResponse] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
   //chat assistant
 
@@ -62,8 +56,13 @@ export const ChatBot = () => {
     setOpen(false);
   };
 
+  const isOpen = isFocused && chat !== "";
+  const handleBlur = () => {
+    setTimeout(() => setIsFocused(false), 300);
+  };
+
   return (
-    <div className="flex justify-end mr-9 mb-9">
+    <div className="absolute right-9 bottom-9">
       <DropdownMenu open={open}>
         <DropdownMenuTrigger asChild>
           <Button
@@ -74,17 +73,18 @@ export const ChatBot = () => {
             <MessageCircle className="text-primary-foreground h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-95">
+        <DropdownMenuContent className="w-95 mr-9">
           <div className="flex justify-between items-center">
             <DropdownMenuLabel>Chat assistant</DropdownMenuLabel>
             <Button variant={"ghost"} onClick={chatHandlerClose}>
               <X />
             </Button>
           </div>
+          <DropdownMenuSeparator />
 
           <DropdownMenuItem className="py-4 px-6 flex flex-col gap-2">
             {chat ? (
-              <div className="bg-secondary opacity-80 rounded-xl py-2 px-4 flex justify-center">
+              <div className="bg-secondary opacity-80 rounded-xl py-2 px-4 flex justify-start">
                 <p className="text-sm leading-5 font-normal text-black">
                   {chat}
                 </p>
@@ -102,11 +102,14 @@ export const ChatBot = () => {
               ""
             )}
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem className="flex gap-2">
             <Input
               placeholder="type your message..."
               value={chat}
               onChange={(e) => setChat(e.target.value)}
+              onBlur={handleBlur}
             />{" "}
             <Button
               disabled={loading || !chat}

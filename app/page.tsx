@@ -7,7 +7,7 @@ import { ImageToText } from "./_components/imageToText/ImageToText";
 
 export default function Home() {
   return (
-    <div className="">
+    <div className="h-screen w-screen relative">
       <div className="h-screen w-screen flex justify-center items-center">
         <Card>
           <div className="p-5">
@@ -31,9 +31,12 @@ export default function Home() {
             </Tabs>
           </div>
         </Card>
+        {/* <div className="absolute right-9 bottom-9"> */}
+        <ChatBot />
+        {/* </div> */}
       </div>
+
       {/* 4dh  */}
-      <ChatBot />
     </div>
   );
 }

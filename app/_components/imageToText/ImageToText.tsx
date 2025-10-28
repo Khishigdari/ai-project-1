@@ -26,13 +26,17 @@ export const ImageToText = () => {
 
   const defineImage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!uploadedImage) return;
+    // if (!uploadedImage) return;
     setLoading(true);
     setDescription("");
 
     const formData = new FormData();
-    formData.append("file", uploadedImage);
-
+    if (uploadedImage) {
+      formData.append("file", uploadedImage);
+    } else {
+      alert("Please upload an image first!");
+      return;
+    }
     try {
       const response = await fetch("/api/image-to-text", {
         method: "POST",
@@ -41,14 +45,11 @@ export const ImageToText = () => {
 
       const data = await response.json();
 
-      if (response.ok) {
-        setDescription(data.caprion || "No caption generated.");
+      if (data.text) {
+        setDescription(data.text);
       } else {
-        setDescription("Error: " + data.error);
+        alert("Failed to generate chat assistant");
       }
-    } catch (err) {
-      console.error(err);
-      setDescription("Something went wrong.");
     } finally {
       setLoading(false);
     }
