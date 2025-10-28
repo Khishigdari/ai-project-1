@@ -7,9 +7,9 @@ import { FileText, RotateCw, Sparkles } from "lucide-react";
 import React, { useState } from "react";
 
 export const TextToText = () => {
-  const [loading, setLoading] = useState(false);
-  const [descPrompt, setDescPrompt] = useState("");
-  const [ingredients, setIngredients] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [descPrompt, setDescPrompt] = useState<string>("");
+  const [ingredients, setIngredients] = useState<string>("");
 
   //extracting ingredients
 
@@ -64,7 +64,7 @@ export const TextToText = () => {
                 <Button
                   variant={"outline"}
                   // onClick={() => {
-                  //   setPrompt("");
+                  //   setDescPrompt("");
                   //   setIngredients("");
                   // }}
                 >

@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export const POST = async (req: NextRequest) => {
-  //   try {
   const { chat } = await req.json();
 
   if (!chat) {
@@ -13,22 +12,13 @@ export const POST = async (req: NextRequest) => {
       { status: 400 }
     );
   }
-  // async function main() {
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
-    // contents: "Explain how AI works in a few words",
-    contents: chat,
+    contents: `Answer within 30 words.
+
+User question: "${chat}"`,
   });
   console.log(response.text);
 
-  // }
-  // main();
   return NextResponse.json({ text: response.text });
-  //   } catch (error) {
-  //     console.log("Error generating chat:", error);
-  //     return NextResponse.json(
-  //       { error: "Failed to generate chat" },
-  //       { status: 500 }
-  //     );
-  //   }
 };

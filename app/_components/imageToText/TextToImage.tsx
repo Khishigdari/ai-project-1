@@ -6,14 +6,14 @@ import { TabsContent } from "@radix-ui/react-tabs";
 import { FileText, RotateCw, Sparkles } from "lucide-react";
 import React, { useState } from "react";
 export const TextToImage = () => {
-  const [image, setImage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [prompt, setPrompt] = useState("");
+  const [image, setImage] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [prompt, setPrompt] = useState<string>("");
   //text to image
   const generateImage = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setImage("");
+    setImage(null);
 
     try {
       const response = await fetch("/api/generate-image", {
@@ -55,7 +55,13 @@ export const TextToImage = () => {
                     Food image creator
                   </Label>
                 </div>
-                <Button variant={"outline"}>
+                <Button
+                // variant={"outline"}
+                // onClick={() => {
+                //   setPrompt("");
+                //   setImage(null);
+                // }}
+                >
                   <RotateCw className="text-foreground" />
                 </Button>
               </div>

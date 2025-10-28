@@ -10,8 +10,8 @@ import React, { ChangeEvent, useState } from "react";
 export const ImageToText = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [description, setDescription] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fileChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
