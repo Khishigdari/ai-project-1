@@ -15,17 +15,20 @@ export const ChatBot = () => {
   const [chatResponse, setChatResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
+  const [sentChat, setSentChat] = useState<string>("");
 
   const chatBotAssistant = async (e?: React.FormEvent) => {
     e?.preventDefault();
     setLoading(true);
     setChatResponse("");
+    setSentChat(chat);
+    setChat("");
 
     try {
       const response = await fetch("/api/gemini-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat }),
+        body: JSON.stringify({ chat, chatResponse }),
       });
       const data = await response.json();
       if (data.text) {
@@ -35,7 +38,6 @@ export const ChatBot = () => {
       }
     } finally {
       setLoading(false);
-      // setChat("");
     }
   };
 
@@ -67,16 +69,20 @@ export const ChatBot = () => {
           <DropdownMenuSeparator />
           <div className="py-4 px-6 flex flex-col gap-2">
             {/* space-y-2 */}
-            {/* {chat && (
-              <div className="bg-secondary rounded-xl py-2 px-4 text-sm text-black">
-                {chat}
-              </div>
-            )} */}
-            {chatResponse && (
-              <div className="bg-primary text-white rounded-xl py-2 px-4 text-sm">
-                {chatResponse}
-              </div>
-            )}
+            <div className="flex justify-end">
+              {sentChat && (
+                <div className="bg-secondary rounded-xl py-2 px-4 text-sm text-black flex justify-end">
+                  {sentChat}
+                </div>
+              )}
+            </div>
+            <div className="flex justify-start">
+              {chatResponse && (
+                <div className="bg-primary text-white rounded-xl py-2 px-4 text-sm">
+                  {chatResponse}
+                </div>
+              )}
+            </div>
           </div>
           <DropdownMenuSeparator />
           <div className="flex gap-2 mt-3">
