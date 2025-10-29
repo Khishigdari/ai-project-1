@@ -115,7 +115,9 @@ export const ImageToText = () => {
             {description ? (
               <div className="mt-8 w-full max-w-2xl">
                 <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-                  <p className="text-lg whitespace-pre-wrap">{description}</p>
+                  <p className="text-sm leading-6 font-normal whitespace-pre-wrap">
+                    {description}
+                  </p>
                 </div>
               </div>
             ) : (

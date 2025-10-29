@@ -103,7 +103,9 @@ export const TextToText = () => {
                   Extracted Ingredients:
                 </h2>
                 <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-                  <p className="text-lg whitespace-pre-wrap">{ingredients}</p>
+                  <p className="text-sm leading-6 font-normal whitespace-pre-wrap">
+                    {ingredients}
+                  </p>
                 </div>
               </div>
             ) : (

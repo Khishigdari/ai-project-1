@@ -19,7 +19,7 @@ export const POST = async (req: NextRequest) => {
       messages: [
         {
           role: "user",
-          content: `Extract only the ingredients from this food description and return them as a simple comma-separated list without any explanation.
+          content: `Extract only the ingredients from this food description and return them as a simple comma-separated list without any explanation by listing them down using bullet points.
 Food description: ${descPrompt}
 Ingredients:`,
         },

@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
 
 export const ChatBot = () => {
   const [chat, setChat] = useState<string>("");
@@ -33,6 +34,8 @@ export const ChatBot = () => {
       const data = await response.json();
       if (data.text) {
         setChatResponse(data.text);
+      } else if (data.text2) {
+        setChatResponse(data.text2);
       } else {
         alert("Failed to generate chat assistant");
       }
@@ -83,6 +86,9 @@ export const ChatBot = () => {
                 </div>
               )}
             </div>
+            {/* <div className="flex justify-center mt-6">
+              {loading ? <Spinner /> : ""}
+            </div> */}
           </div>
           <DropdownMenuSeparator />
           <div className="flex gap-2 mt-3">
