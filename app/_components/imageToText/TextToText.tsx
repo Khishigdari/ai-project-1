@@ -11,8 +11,6 @@ export const TextToText = () => {
   const [descPrompt, setDescPrompt] = useState<string>("");
   const [ingredients, setIngredients] = useState<string>("");
 
-  //extracting ingredients
-
   const extractIngredients = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -74,7 +72,6 @@ export const TextToText = () => {
               <p className="text-sm leading-5 font-normal text-muted-foreground">
                 Describe the food, and AI will detect the ingredients.
               </p>
-
               <textarea
                 value={descPrompt}
                 onChange={(e) => setDescPrompt(e.target.value)}

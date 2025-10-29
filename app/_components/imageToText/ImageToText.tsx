@@ -22,11 +22,8 @@ export const ImageToText = () => {
     }
   };
 
-  //image to text
-
   const defineImage = async (e: React.FormEvent) => {
     e.preventDefault();
-    // if (!uploadedImage) return;
     setLoading(true);
     setDescription("");
 
@@ -94,7 +91,6 @@ export const ImageToText = () => {
                 <Input
                   id="tabs-demo-name"
                   type="file"
-                  // onChange={fileChangeHandler}
                   onChange={fileChangeHandler}
                 />
               )}
@@ -117,9 +113,6 @@ export const ImageToText = () => {
             </div>
             {description ? (
               <div className="mt-8 w-full max-w-2xl">
-                {/* <h2 className="text-2xl font-semibold mb-4">
-                        Extracted Ingredients:
-                      </h2> */}
                 <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
                   <p className="text-lg whitespace-pre-wrap">{description}</p>
                 </div>

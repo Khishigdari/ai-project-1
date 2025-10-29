@@ -19,24 +19,14 @@ export default function Home() {
                 </TabsTrigger>
                 <TabsTrigger value="imageCreator">Image creator</TabsTrigger>
               </TabsList>
-
-              {/* 1dh */}
               <ImageToText />
-
-              {/* 2dh  */}
               <TextToText />
-
-              {/* 3dh */}
               <TextToImage />
             </Tabs>
           </div>
         </Card>
-        {/* <div className="absolute right-9 bottom-9"> */}
         <ChatBot />
-        {/* </div> */}
       </div>
-
-      {/* 4dh  */}
     </div>
   );
 }

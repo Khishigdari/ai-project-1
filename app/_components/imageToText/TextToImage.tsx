@@ -9,7 +9,7 @@ export const TextToImage = () => {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [prompt, setPrompt] = useState<string>("");
-  //text to image
+
   const generateImage = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
